@@ -63,7 +63,7 @@ public class OrderService {
         // Modification 2: As the response from inventory controller will now be a List of InventoryResponse object, we need to create that Pojo here as well.
         // Modification 3: bodyToMono() is changed to accommodate the InventoryResponse object.
         InventoryResponse[] inventoryResponseArray = webClient.get()
-                .uri("http://localhost:8082/api/inventory",
+                .uri("http://inventory-service/api/inventory",
                         uriBuilder -> uriBuilder.queryParam("skuCode", skuCodesList).build())
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
@@ -76,7 +76,7 @@ public class OrderService {
             allProductsInStock = Arrays.stream(inventoryResponseArray).allMatch(inventoryResponse -> inventoryResponse.isInStock());
         }
 
-        if(allProductsInStock)
+        if (allProductsInStock)
             orderRepository.save(order);
         else
             throw new IllegalArgumentException("ERROR: Product is not in stock, please try again later");
