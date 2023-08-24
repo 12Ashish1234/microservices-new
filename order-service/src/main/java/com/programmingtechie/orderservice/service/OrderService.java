@@ -26,7 +26,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
+
+    String inventoryServiceUrl = "http://inventory-service/api/inventory";
 
     public void placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
@@ -62,8 +64,8 @@ public class OrderService {
         // Modification 1: the InventoryController api endpoint will now require a RequestParam which is a List of skuCodes. Hence, we are passing that using uriBuilder.
         // Modification 2: As the response from inventory controller will now be a List of InventoryResponse object, we need to create that Pojo here as well.
         // Modification 3: bodyToMono() is changed to accommodate the InventoryResponse object.
-        InventoryResponse[] inventoryResponseArray = webClient.get()
-                .uri("http://inventory-service/api/inventory",
+        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
+                .uri(inventoryServiceUrl,
                         uriBuilder -> uriBuilder.queryParam("skuCode", skuCodesList).build())
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
